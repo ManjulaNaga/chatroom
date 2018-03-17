@@ -1,0 +1,127 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf210
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;\f2\fmodern\fcharset0 Courier;
+\f3\fswiss\fcharset0 ArialMT;\f4\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;\red10\green80\blue1;\red235\green235\blue235;\red27\green29\blue31;
+\red235\green236\blue237;\red36\green38\blue41;\red43\green39\blue19;\red32\green35\blue35;\red66\green66\blue66;
+\red52\green52\blue52;\red236\green236\blue236;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}.}{\leveltext\leveltemplateid1\'02\'00.;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid101\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid2}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}}
+\margl1440\margr1440\vieww13440\viewh13860\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f1\fs22 \cf0 \CocoaLigature0 keytool -genkeypair -keyalg EC -alias mykey-Alice -keypass keypwd -keystore aliceKeystore.jks -storepass Alicepwd -validity 360\
+\
+\
+\pard\pardeftab720
+
+\f2\fs26 \cf2 \cb3 \CocoaLigature1 \
+//generate certificate for keystone public key\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f1\fs22 \cf0 \cb1 \CocoaLigature0 keytool -export -alias mykey-Alice -file Alice.cer -keystore aliceKeystore.jks\
+\
+\
+\
+keytool -printcert -v -file Alice.cer -keystore aliceKeystore.jks\
+\
+\
+keytool -v -list -keystore aliceKeystore.jks\
+\
+\
+\
+keytool -certreq -alias Alice -keystore aliceKeystore.jks -file Alice.csr//wrong\
+\
+\
+keytool -certreq -alias  mykey-Alice -keystore aliceKeystore.jks -file Alice.csr\
+\
+ openssl ca -out ../alice/Alice.pem -keyfile ca.key -infiles ../alice/Alice.csr\
+\
+\'97\'97\'97\'97\'97\
+ openssl x509 -outform der -in Alice.bundle.pem -out certificate.der\
+\
+keytool -importcert -alias mykey\'97Alice -keystore aliceKeystore.jks -file certificate.der\
+\
+\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sl320
+\ls1\ilvl0
+\fs26 \cf4 \cb5 \CocoaLigature1 {\listtext	1.	}keytool -import -trustcacerts -alias mykey-Alice -file Alice.bundle.pem -keystore aliceKeystore.jks\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sl380
+\ls1\ilvl0
+\f3\fs30 \cf4 \cb1 {\listtext	2.	}\
+\pard\pardeftab720
+
+\fs26 \cf4 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f1\fs22 \cf0 \CocoaLigature0 \
+\'97\'97\'97\'97\'97\
+\
+\
+\pard\pardeftab720
+
+\fs26 \cf4 \cb5 \CocoaLigature1 keytool -importkeystore -srckeystore certKeystore.jks -destkeystore certKeystore.p12 -deststoretype PKCS12\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\fs22 \cf0 \cb1 \CocoaLigature0 \
+\pard\pardeftab720
+
+\fs26 \cf4 \cb5 \CocoaLigature1 openssl pkcs12 -in certKeystore.p12 -nodes -nocerts -out cacertkey.pem\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\fs22 \cf0 \cb1 \CocoaLigature0 \
+//convert .pem to .key file\
+\pard\pardeftab720
+
+\fs26 \cf4 \cb5 \CocoaLigature1 openssl pkey -in cacertkey.pem -out cacertkey.key\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\fs22 \cf0 \cb1 \CocoaLigature0 \
+//convert .pem to .pfx\
+\pard\pardeftab720
+
+\fs26 \cf6 \cb5 \CocoaLigature1 openssl pkcs12 -in \cf4 \cb5 cacertkey.pem\cf6 \cb5  -out \cf4 \cb5 cacertkey.pfx\cf7 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\fs22 \cf0 \cb1 \CocoaLigature0 \
+\
+//convert .pfx to .key\
+\pard\pardeftab720
+
+\f4\fs30 \cf8 \CocoaLigature1 openssl pkcs12 -in 
+\f1\fs26 \cf4 \cb5 cacertkey.pfx
+\f4\fs30 \cf8 \cb1  -out 
+\f1\fs26 \cf4 \cb5 cacertk caprivatekey.key  
+\f4\fs30 \cf8 \cb1 -nocerts\
+\
+
+\f1\fs22 \cf0 \CocoaLigature0 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sl500
+\ls2\ilvl0
+\f2\fs32 \cf9 \CocoaLigature1 {\listtext	\'95	}openssl ca -extensions v3_ca -out server.CA-signed.crt -keyfile 
+\f1\fs26 \cf4 \cb5 caprivatekey.key 
+\f2\fs32 \cf9 \cb1   -verbose -selfsign -md sha256 -enddate 330630235959Z -infiles ca.csr
+\f0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f1\fs22 \cf0 \CocoaLigature0 \
+\
+\
+\
+\
+\
+/// create alice trust store\
+\
+\pard\pardeftab720
+
+\f2\fs26 \cf10 \cb11 \CocoaLigature1 $ keytool -importcert -keystore alice.truststore -alias aliceCAroot -storepass trustped -file ../mycert/ca.cer\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f1\fs22 \cf0 \cb1 \CocoaLigature0 \
+\
+\
+}

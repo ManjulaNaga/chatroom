@@ -1,0 +1,56 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf210
+{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;\f1\fmodern\fcharset0 Courier;\f2\fswiss\fcharset0 Helvetica;
+\f3\fswiss\fcharset0 ArialMT;}
+{\colortbl;\red255\green255\blue255;\red10\green80\blue1;\red235\green235\blue235;\red66\green66\blue66;
+\red255\green255\blue255;\red36\green38\blue41;\red235\green236\blue237;\red87\green96\blue105;\red11\green96\blue192;
+}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}}
+\margl1440\margr1440\vieww13560\viewh13840\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs22 \cf0 \CocoaLigature0 keytool -genkeypair -keyalg EC -alias mykey-Bob -keypass keypwd -keystore bobKeystore.jks -storepass Bobpwd -validity 360\
+\
+\
+\pard\pardeftab720
+
+\f1\fs26 \cf2 \cb3 \CocoaLigature1 \
+//generate certificate for keystone public key\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs22 \cf0 \cb1 \CocoaLigature0 keytool -export -alias mykey-Bob -file Bob.cer -keystore bobKeystore.jks\
+\
+\
+\
+keytool -printcert -v -file Bob.cer -keystore bobKeystore.jks\
+\
+\
+keytool -v -list -keystore bobKeystore.jks\
+\
+\
+\
+keytool -certreq -alias Bob -keystore bobKeystore.jks -file Bob.csr//wrong\
+\
+\
+keytool -certreq -alias  mykey-Bob -keystore bobKeystore.jks -file Bob.csr\
+\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sl500
+\ls1\ilvl0
+\f1\fs32 \cf4 \cb5 \CocoaLigature1 {\listtext	\'95	}openssl ca -out Bob.pem -keyfile mycert/ca.key -infiles Bob.csr
+\f2 \
+\pard\pardeftab720
+
+\f0\fs26 \cf6 \cb7 \
+\pard\pardeftab720\qc
+
+\f3\fs40 \cf8 \cb5 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs22 \cf0 \cb1 \CocoaLigature0 keytool -import -trustcacerts -alias mykey-Bob -file Bob.bundle.pem -keystore bobKeystore.jks
+\f3\fs40 \cf8 \cb5 \CocoaLigature1 \
+\pard\pardeftab720\qc
+
+\fs2 \cf9 down vote\
+\pard\pardeftab720\qc
+\cf8 acc}

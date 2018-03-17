@@ -1,0 +1,126 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf210
+{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs22 \cf0 \CocoaLigature0   492  openssl genrsa -des3 -out ca.key 2048\
+  493  ls -ltr\
+  494  pwd\
+  495  rm -rf ca.key \
+  496  openssl genrsa -des3 -out ca.key 2048\
+  497  ls -ltr\
+  498  openssl req -verbose -new -key ca.key -out ca.csr -sha256\
+  499  ls -ltr\
+  500  openssl ca -extensions v3_ca -out ca.crt -keyfile ca.key -verbose -selfsign -md sha256 -enddate 330630235959Z -infiles ca.csr\
+  501  ls -ltr\
+  502  vi /System/Library/OpenSSL/openssl.cnf\
+  503  cd  /System/Library/OpenSSL\
+  504  ls -ltr\
+  505  mkdir demoCA\
+  506  sudo mkdir demoCA\
+  507  ls -ltr\
+  508  pwd\
+  509  cd demoCA/\
+  510  mkdir newcerts\
+  511  sudo mkdir newcerts\
+  512  ls -ltr\
+  513  cd ..\
+  514  chmod 777 demoCA\
+  515  sudo chmod 777 demoCA\
+  516  ]'\
+  517  ls -ltr\
+  518  sudo chmod -r  777 demoCA\
+  519  sudo chmod -r 777 demoCA\
+  520  cd demoCA/\
+  521  ls\
+  522  sudo ls\
+  523  sudo ls -ltr\
+  524  sudo chmod 777 newcerts\
+  525  sudo ls -ltr\
+  526  sudo ls -ltr\
+  527  pwd\
+  528  pwd\
+  529  cd ..\
+  530  rm -rf demoCA/\
+  531  sudo rm -rf demoCA/\
+  532  ls -ltr\
+  533  cd ..\
+  534  pwd\
+  535  cd /Users/Vamsi/Manju/mychatroom\
+  536  ls\
+  537  cd mycert/\
+  538  ls\
+  539  vi ca.crt\
+  540  cd ../alice\
+  541  ls -ltr\
+  542  cp Alice.pem Alice.bundle.pem\
+  543  pwd\
+  544  echo ../mycert/demoCA/cacert.pem >> Alice.bundle.pem \
+  545  vi Alice.bundle.pem \
+  546  echo ../mycert/demoCA/cacert.pem\
+  547  cat ../mycert/demoCA/cacert.pem\
+  548  vi Alice.bundle.pem \
+  549  rm Alice.bundle.pem \
+  550  cp Alice.pem Alice.bundle.pem\
+  551  cat ../mycert/demoCA/cacert.pem >> Alice.bundle.pem \
+  552  vi Alice.bundle.pem \
+  553  cd ../bob\
+  554  ls -ltr\
+  555  cp Bob.pem Bob.bundle.pem\
+  556  cat ../mycert/demoCA/cacert.pem >> Bob.bundle.pem \
+  557  vi Bob.bundle.pem \
+  558  openssl x509 -outform der -in Bob.bundle.pem -out certificate.der\
+  559  ls -ltr\
+  560  keytool -import -alias your-alias -keystore bobKeystore-file certificate.der\
+  561  keytool -importcert -alias your-alias -keystore bobKeystore-file certificate.der\
+  562  keytool -import -alias mykey\'97Bob keystore bobKeystore-file certificate.der\
+  563  keytool -import -alias mykey\'97Bob -keystore bobKeystore-file certificate.der\
+  564  keytool -importcert -alias mykey\'97Bob keystore bobKeystore.jks -file certificate.der\
+  565  keytool -importcert -alias mykey\'97Bob -keystore bobKeystore.jks -file certificate.der\
+  566  cd ../alice\
+  567  openssl x509 -outform der -in Alice.bundle.pem -out certificate.der\
+  568  keytool -importcert -alias mykey\'97Alice -keystore aliceKeystore.jks -file certificate.der\
+  569  ls\
+  570  vim Alice.bundle.pem \
+  571  keytool -printcert -v -file Alice.cer -keystore aliceKeystore.jks\
+  572  keytool -v -list -keystore aliceKeystore.jks\
+  573  vi certificate.der \
+  574  pwd\
+  575  openssl x509 -outform der -in ../mycert/demoCA/cacert.pem -out ca.der\
+  576  keytool -importcert -alias mykey\'97Alice -keystore aliceKeystore.jks -file ca.der\
+  577  keytool -import -trustcacerts -alias mykey-Alice -file Alice.bundle.pem -keystore aliceKeystore.jks\
+  578  keytool -import -trustcacerts -alias mykey-Alice -file Alice.bundle.pem -keystore aliceKeystore.jks\
+  579  keytool -v -list -keystore aliceKeystore.jks\
+  580  cd ../bob\
+  581  keytool -import -trustcacerts -alias mykey-Alice -file Bob.bundle.pem -keystore bobKeystore.jks\
+  582  keytool -import -trustcacerts -alias mykey-Bob -file Bob.bundle.pem -keystore bobKeystore.jks\
+  583  keytool -v -list -keystore bobKeystore.jks\
+  584  cd ..\
+  585  ls\
+  586  cd myServer/\
+  587  ls\
+  588  mkdir chathub\
+  589  cd chathub/\
+  590  keytool -genkeypair -keyalg EC -alias chathub -keypass keypwd -keystore chathubKeystore.jks -storepass chathubpwd -validity 360\
+  591  keytool -export -alias chathub -file chathub.cer -keystore chathubKeystore.jks\
+  592  keytool -certreq -alias  chathub -keystore chathubKeystore.jks -file chathub.csr\
+  593  ls -ltr\
+  594* openssl ca -out chathub.pem -keyfile \
+  595  openssl ca -out chathub.pem -keyfile ../mycert/ca.key -infiles chathub.csr\
+  596  pwd\
+  597  cd ..\
+  598  mv myServer/chathub chathub\
+  599  cd ..\
+  600  mv myServer/chathub chathub\
+  601  ls\
+  602  cd myServer/\
+  603  ls\
+  604  cd ..\
+  605  rm -rf myServer/\
+  606  clear\
+  607  cd chathub/\
+  608  ls -ltr\
+  609  cd ../mycert/\
+  610  ls\
+  611  openssl ca -out chathub/chathub.pem -keyfile ca.key -infiles chathub/chathub.csr}
