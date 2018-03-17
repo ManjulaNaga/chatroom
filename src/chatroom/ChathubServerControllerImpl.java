@@ -121,13 +121,17 @@ public class ChathubServerControllerImpl implements ChathubServerController{
 
 	public void sendCertificateChainToClient(Certificate[] certs) throws Exception{
 		System.out.println("sending certificates to client..");	
+		
+		out = new ByteArrayOutputStream();
 		for (int i = 0; i < certs.length; i++) {
-			 byte[] encodedCert = certs[i].getEncoded(); 	// Base64.getEncoder().encode(
-			 out = new ByteArrayOutputStream();
-			 out.write(encodedCert, 0, encodedCert.length);
-			 out.writeTo(sock.getOutputStream());
-			 System.out.println(":k1 "+encodedCert);
-		}	
+			 byte[] cert = certs[i].getEncoded();
+			 out.write(cert, 0, cert.length);
+		}
+		byte[] encodedCert = Base64.getEncoder().encode(out.toByteArray());
+		ByteArrayOutputStream encOut = new ByteArrayOutputStream();
+		encOut.write(encodedCert);
+			 encOut.writeTo(sock.getOutputStream());
+			 System.out.println(":k1 "+encodedCert);	
 	}
 
 	public void sendPublicKeyToClient(byte[] pub) throws Exception{
@@ -138,7 +142,7 @@ public class ChathubServerControllerImpl implements ChathubServerController{
 		    //in = new ObjectInputStream(sock.getInputStream());
 		 out.write(encodedPub, 0, encodedPub.length);
 		 out.writeTo(sock.getOutputStream());
-		 System.out.println(":k1 "+encodedPub);
+		 System.out.println(":k1 "+ new String(encodedPub));
 
 	}
 	public byte[] recievePublicKeyfromClient() throws Exception{
@@ -183,7 +187,7 @@ InvalidKeyException, CertificateException, NoSuchAlgorithmException, NoSuchProvi
 	public Certificate[] recieveCertificateChainFromClient() throws Exception{
 		System.out.println("in recieve certificate from client().......");
 		byte[] encCertBytes =  getBytesFromSocket();
-		byte[] certBytes = encCertBytes;	// Base64.getDecoder().decode(
+		byte[] certBytes = Base64.getDecoder().decode(encCertBytes);
 		System.out.println("Received:" + new String(certBytes));
 		ByteArrayInputStream bis = new ByteArrayInputStream(certBytes);
 		Collection certs = CertificateFactory.getInstance("X.509").generateCertificates(bis);
@@ -212,7 +216,8 @@ InvalidKeyException, CertificateException, NoSuchAlgorithmException, NoSuchProvi
 		InputStream istream = sock.getInputStream();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();  
 		int bufferSize = 256;
-		byte[] content = new byte[bufferSize];  
+		byte[] content = new byte[bufferSize]
+				;  
 		int bytesRead = -1;
 		do {
 			bytesRead = istream.read( content );
@@ -241,3 +246,5 @@ InvalidKeyException, CertificateException, NoSuchAlgorithmException, NoSuchProvi
 	}
 	
 }
+
+//.n/. ././n

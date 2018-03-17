@@ -3,6 +3,7 @@ package chatroom;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
+import java.util.Base64;
 import java.util.HashSet;
 
 //import java.util.Base64.*;
@@ -17,16 +18,17 @@ public class ClientAlice {
 	      ///if(cipherStr[1].equals("ecdh-secp224r1+nocert+aes128/gcm")){
 	    	  System.out.println("cipher selected was "+cipherStr[1]);
 	     // }
-	    	  Certificate[] clientCerts = CertificateUtil.getCertificateChain("/Users/Vamsi/Manju/mychatroom/alice/aliceKeystore.jks", "Alicepwd", "mykey-alice");
-	    	  clicon.sendCertificateChainToServer(clientCerts);
-	    	  Certificate[] serverCerts = clicon.recieveCertificateChainFromServer();
+	    	 Certificate[] clientCerts = CertificateUtil.getCertificateChain("F:/masters docs/8 Quarter/network security/project/mychatroom/alice/aliceKeystore.jks", "Alicepwd", "mykey-alice");
+	    	 clicon.sendCertificateChainToServer(clientCerts);
+	    	 Certificate[] serverCerts = clicon.recieveCertificateChainFromServer();
 	    	  
 		      if(clicon.validateCertificate(clientCerts[1],serverCerts[0])){
 		    	  System.out.println("certificate is validated..");
 				    KeyPair kp = eckey.genServerKeyPair();
 				      clicon.sendPublicKeyToServer(kp.getPublic().getEncoded());
 				      byte[] cliPubByte = clicon.getBytesFromSocket();
-				      System.out.println("cliPubByte "+cliPubByte);
+				      //byte[] encliPubByte = Base64.getEncoder().encode(cliPubByte);
+				      System.out.println("cliPubByte "+ new String(cliPubByte));
 				      
 				      PublicKey cliPub = eckey.genPubKey(cliPubByte);
 				      System.out.println("*****Received client public key :"+cliPub);
@@ -35,7 +37,7 @@ public class ClientAlice {
 				      System.out.println("Received client public key :"+cliPubByte);
 				      clicon.setEckey(eckey);
 					  System.out.println(" Shared key established sucessfully ..");
-					  clicon.clientChat();
+					 clicon.clientChat();
 		      }
 		      else{
 		    	  System.out.println("Not a valid certficate"); 

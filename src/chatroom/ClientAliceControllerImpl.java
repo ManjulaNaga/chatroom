@@ -24,8 +24,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import javax.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
 
+import java.security.cert.X509Certificate;
 import java.io.*;
 public class ClientAliceControllerImpl implements ClientController{
 	Socket sock;
@@ -128,13 +128,17 @@ public class ClientAliceControllerImpl implements ClientController{
 
 	public void sendCertificateChainToServer(Certificate[] certs) throws Exception{
 		System.out.println("sending certificates to server..");	
+		
+		out = new ByteArrayOutputStream();
 		for (int i = 0; i < certs.length; i++) {
-			 byte[] encodedCert = certs[i].getEncoded();	// Base64.getEncoder().encode(
-			 out = new ByteArrayOutputStream();
-			 out.write(encodedCert, 0, encodedCert.length);
-			 out.writeTo(sock.getOutputStream());
-			 System.out.println(":k1 "+encodedCert);
-		}	
+			 byte[] cert = certs[i].getEncoded();
+			 out.write(cert, 0, cert.length);
+		}
+		byte[] encodedCert = Base64.getEncoder().encode(out.toByteArray());
+		ByteArrayOutputStream encOut = new ByteArrayOutputStream();
+		encOut.write(encodedCert);
+			 encOut.writeTo(sock.getOutputStream());
+			 System.out.println(":k1 "+encodedCert);	
 	}
 	
 	public byte[] recievePublicKeyfromServer() throws Exception{
@@ -154,12 +158,21 @@ public class ClientAliceControllerImpl implements ClientController{
 public Certificate[] recieveCertificateChainFromServer() throws Exception {
 	System.out.println("in recieve certificate chain from server().......");
 	byte[] encCertBytes =  getBytesFromSocket();
-	byte[] certBytes = encCertBytes;	// Base64.getDecoder().decode(
+	byte[] certBytes = Base64.getDecoder().decode(encCertBytes);
 	System.out.println("Received:" + new String(certBytes));
 	ByteArrayInputStream bis = new ByteArrayInputStream(certBytes);
 	System.out.println("bis...."+	bis);
 	Collection certs = CertificateFactory.getInstance("X.509").generateCertificates(bis);
-	
+//	if (certs.size() != 2) {
+//		byte[] secondEncCertBytes =  getBytesFromSocket();
+//		byte[] secondCertBytes = Base64.getDecoder().decode(secondEncCertBytes);
+//		System.out.println("Received:" + new String(secondCertBytes));
+//		ByteArrayInputStream secondBis = new ByteArrayInputStream(secondCertBytes);
+//		System.out.println("bis...."+	secondBis);
+//		Collection secondCerts = CertificateFactory.getInstance("X.509").generateCertificates(secondBis);
+//		certs.addAll(secondCerts);
+//	}
+	System.out.println("Total Certificates Read:"+certs.size());
 		Certificate[] readCerts = new Certificate[2];
 		int i=0;
 		System.out.println("outside for loop...");
@@ -179,7 +192,7 @@ System.out.println("sending public key to server..");
     //in = new ObjectInputStream(sock.getInputStream());
  out.write(encodedPub, 0, encodedPub.length);
  out.writeTo(sock.getOutputStream());
- System.out.println(":k1 "+encodedPub);
+ System.out.println(":k1 "+ new String(encodedPub));
 }
 
 public byte[]  getCertificateFromKeystore() throws 

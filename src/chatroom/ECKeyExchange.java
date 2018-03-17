@@ -2,8 +2,6 @@ package chatroom;
 import java.util.Base64;
 import java.util.Base64.*;
 import java.security.spec.*;
-
-
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
 
@@ -56,6 +54,27 @@ import org.bouncycastle.util.encoders.Base64;
 		    PublicKey publicKey = keyFactory.generatePublic(keySpec); 
 		    System.out.println("publicKey generated from encoded bytes is "+publicKey);
 		    return publicKey;
+		 /*System.out.println("in generate public key...");
+		 	//byte[] keyBytes = Base64.getDecoder().decode(keyb); 
+/*
+		    X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyb); 
+		    KeyFactory keyFactory = KeyFactory.getInstance("EC");
+		    PublicKey publicKey = keyFactory.generatePublic(keySpec); */
+		 
+		// Get key pair Objects from their respective byte arrays
+		     // We initialize encoded key specifications based on the encoding format
+		     //EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+		/* byte[] pubbyte =Base64.getDecoder().decode(keyb);
+		 System.out.println("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn"+new String(pubbyte));
+		 X509EncodedKeySpec spec = new X509EncodedKeySpec(pubbyte);
+
+		     //EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(keyb);
+		     KeyFactory keyFactory = KeyFactory.getInstance("EC");
+		    // PrivateKey newPrivateKey = keyFactory.generatePrivate(privateKeySpec);
+		     PublicKey newPublicKey = keyFactory.generatePublic(spec);
+
+		    System.out.println("publicKey generated from encoded bytes is "+newPublicKey);
+		    return newPublicKey;*/
 	 
 	 }
 	 SecretKey skey;
@@ -71,20 +90,8 @@ import org.bouncycastle.util.encoders.Base64;
 		    ka.init(privKey);
 		    ka.doPhase(pubKey,true);
 		    byte[] sb = ka.generateSecret();
-		    /*try{
-		    	BigInteger s=new BigInteger(1,sb);
-		    	System.out.println("    //Shared secret key generated is "+ s);
-		    	return s;
-		    }
-		    catch(NumberFormatException e)
-		    {
-		    	System.out.println(":err "+e);
-		    	return null;
-		    }
-		   */
-		    
-		    skey = new SecretKeySpec(sb,0,sb.length,"ECDH");
-		    System.out.println("Shared Key generated is==================== : "+skey);
+		    skey = new SecretKeySpec(sb, 0, 16,"AES");
+		    System.out.println("Shared Key generated is==================== : "+new String(skey.getEncoded()));
 		    setSecretKey(skey);
 		    return skey;
 		}
