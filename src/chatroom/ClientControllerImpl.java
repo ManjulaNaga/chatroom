@@ -27,7 +27,7 @@ import javax.security.cert.CertificateEncodingException;
 
 import java.security.cert.X509Certificate;
 import java.io.*;
-public class ClientAliceControllerImpl implements ClientController{
+public class ClientControllerImpl implements ClientController{
 	Socket sock;
 	BufferedReader iReader;
 	OutputStream ostream;
@@ -37,7 +37,9 @@ public class ClientAliceControllerImpl implements ClientController{
 	private ByteArrayOutputStream out;
 	private ByteArrayInputStream in;
 	private Authentication auth;
-	ClientAliceControllerImpl() throws Exception{
+	private Client client;
+	private String name;
+	ClientControllerImpl() throws Exception{
 		try
 		{
 			host = InetAddress.getLocalHost();
@@ -47,11 +49,12 @@ public class ClientAliceControllerImpl implements ClientController{
 	    	System.out.println("Host ID not found!");
 	        System.exit(1);
 	    }
-		sock = new Socket(host, 3000);
+		sock = new Socket(host, 3001);
 		iReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 		ostream = sock.getOutputStream();
 	    eckey = new  ECKeyExchange();
 	    auth = new Authentication();
+	   
 	    
 	}
 	public void clientChat() throws Exception{
@@ -59,20 +62,20 @@ public class ClientAliceControllerImpl implements ClientController{
 		BufferedReader keyRead = new BufferedReader(new InputStreamReader(System.in));
 		      // sending to client (pwrite object)
 		PrintWriter pwrite = new PrintWriter(ostream, true);
-		System.out.println("*****Start the chitchat, type and press Enter key*****");
+		System.out.println("*****This is "+ name +"!!*****");
 		String enSendMsg;
 		String receiveMessage, sendMessage;               
 		while(true)
 		{
+			sendMessage = keyRead.readLine();  // keyboard reading
+			//System.out.println("Client :  "+sendMessage);
+			enSendMsg = auth.encryption(sendMessage);
+			pwrite.print(enSendMsg);       // sending encrypted msg to server
+			pwrite.flush();                    // flush the data
+			System.out.println("Reading data...");
 				byte[] reMsg = getBytesFromSocket();
 				System.out.println("Server :  " +auth.decryption(reMsg)); // displaying decrypted msg at  DOS prompt
 				
-				sendMessage = keyRead.readLine();  // keyboard reading
-				System.out.println("Client :  "+sendMessage);
-				enSendMsg = auth.encryption(sendMessage);
-				pwrite.print(enSendMsg);       // sending encrypted msg to server
-				pwrite.flush();                    // flush the data
-				System.out.println("Reading data...");
 		}  
 	}
 	public byte[] getBytesFromSocket() throws Exception{
@@ -99,7 +102,7 @@ public class ClientAliceControllerImpl implements ClientController{
 	public String[] recieveCipher() throws Exception {
 		byte[] readBytes = getBytesFromSocket();
 		String cipherStr = new String(readBytes);
-		System.out.println("recieved ciphers from server.."+ new String(readBytes));
+		//System.out.println("recieved ciphers from server.."+ new String(readBytes));
 		String[] ciphers = cipherStr.split(",");
 		return ciphers;
 	}
@@ -142,9 +145,9 @@ public class ClientAliceControllerImpl implements ClientController{
 	}
 	
 	public byte[] recievePublicKeyfromServer() throws Exception{
-		System.out.println("in recieve certificate from client().......");
+		//System.out.println("in recieve certificate from client().......");
 		byte[] readCert = getBytesFromSocket();
-		System.out.println("recieved certificate from client.."+readCert);
+		//System.out.println("recieved certificate from client.."+readCert);
 		return readCert;
 	}
 
@@ -156,12 +159,12 @@ public class ClientAliceControllerImpl implements ClientController{
  }*/
 
 public Certificate[] recieveCertificateChainFromServer() throws Exception {
-	System.out.println("in recieve certificate chain from server().......");
+	//System.out.println("in recieve certificate chain from server().......");
 	byte[] encCertBytes =  getBytesFromSocket();
 	byte[] certBytes = Base64.getDecoder().decode(encCertBytes);
-	System.out.println("Received:" + new String(certBytes));
+	//System.out.println("Received:" + new String(certBytes));
 	ByteArrayInputStream bis = new ByteArrayInputStream(certBytes);
-	System.out.println("bis...."+	bis);
+	//System.out.println("bis...."+	bis);
 	Collection certs = CertificateFactory.getInstance("X.509").generateCertificates(bis);
 //	if (certs.size() != 2) {
 //		byte[] secondEncCertBytes =  getBytesFromSocket();
@@ -175,15 +178,25 @@ public Certificate[] recieveCertificateChainFromServer() throws Exception {
 	System.out.println("Total Certificates Read:"+certs.size());
 		Certificate[] readCerts = new Certificate[2];
 		int i=0;
-		System.out.println("outside for loop...");
+		//System.out.println("outside for loop...");
 		for (Iterator iterator = certs.iterator(); iterator.hasNext(); i++) {
 			Certificate object = (Certificate) iterator.next();
 			readCerts[i] = object;
-			System.out.println("Cert******************************************************* "+ i + " " + object);
+		//	System.out.println("Cert******************************************************* "+ i + " " + object);
 		}
-		System.out.println("recieved certificate from server..");
+		//System.out.println("recieved certificate from server..");
 	    return readCerts;
 }
+
+public void sendNameToServer(String name) throws Exception{
+//System.out.println("sending name to server..");	
+ byte[] encodedPub = name.getBytes();
+ out = new ByteArrayOutputStream();
+ out.write(encodedPub, 0, encodedPub.length);
+ out.writeTo(sock.getOutputStream());
+// System.out.println("name sent:" + name);
+}
+
 
 public void sendPublicKeyToServer(byte[] pub) throws Exception{
 System.out.println("sending public key to server..");	
@@ -209,7 +222,7 @@ public void setEckey(ECKeyExchange eckey) {
 }
 public boolean validateCertificate(Certificate selfcert,Certificate othercert) throws 
 InvalidKeyException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException, SignatureException{
-	System.out.println(" in validate certification()");
+	//System.out.println(" in validate certification()");
 	PublicKey selfcapub = selfcert.getPublicKey();
 	try{
 		othercert.verify(selfcapub);
@@ -221,5 +234,10 @@ InvalidKeyException, CertificateException, NoSuchAlgorithmException, NoSuchProvi
 		
 	}
 
+}
+@Override
+public void setName(String name) {
+	this.name = name;
+	
 }
 }

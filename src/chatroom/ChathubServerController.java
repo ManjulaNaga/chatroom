@@ -10,6 +10,7 @@ import java.security.cert.CertificateException;
 import java.util.HashSet;
 
 public interface ChathubServerController{
+	public void sendMessage(String message) throws Exception;
 	public void serverChat() throws Exception;
 	public void sendCiphertoClient(String[] cipherStr) throws Exception;
 	public byte[] getBytesFromSocket()throws Exception;

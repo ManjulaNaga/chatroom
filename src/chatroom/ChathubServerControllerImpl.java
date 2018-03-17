@@ -53,16 +53,32 @@ public class ChathubServerControllerImpl implements ChathubServerController{
 	BufferedReader iReader;
 	CertificateDetails certdetails;
 	HashSet<Certificate> certificates = new HashSet<>();
+	String name;
+	String otherName;
 
-	ChathubServerControllerImpl() throws Exception{
-		sersock = new ServerSocket(3000);	
-	    sock = sersock.accept( ); 
+	ChathubServerControllerImpl(Socket socket, String name, String otherName) throws Exception{
+		/*sersock = new ServerSocket(3000);
+	    sock = sersock.accept( );*/ 
+		sock=socket;
+		this.name = name;
+		this.otherName = otherName;
 	    eckey = new  ECKeyExchange(); 
 	    auth = new Authentication();
 	    certdetails = new CertificateDetails();
-	} 
+	}
+
+	public void sendMessage(String message) throws Exception {
+	    //System.out.println("Writing message:" + message);
+		OutputStream ostream = sock.getOutputStream(); 
+		PrintWriter pwrite = new PrintWriter(ostream, true);
+		String encMessage = auth.encryption(message);
+		pwrite.print(encMessage);
+		pwrite.flush();
+	   // System.out.println("Write successful.");
+	}
+	
 	public void serverChat() throws Exception{
-	      System.out.println("Server  ready for chatting");
+	      //System.out.println("Server  ready for chatting");
 		      // reading from keyboard (keyRead object)
 		BufferedReader keyRead = new BufferedReader(new InputStreamReader(System.in));
 		      // sending to client (pwrite object)
@@ -71,25 +87,30 @@ public class ChathubServerControllerImpl implements ChathubServerController{
 		      // receiving from server ( receiveRead  object)
 		InputStream istream = sock.getInputStream();
 		BufferedReader receiveRead = new BufferedReader(new InputStreamReader(istream));
-		System.out.println("*****Start the chitchat, type and press Enter key*****");
+		System.out.println("******This is "+ name+"!!*******");
 		String enSendMsg;
 		String receiveMessage, sendMessage;               
 		while(true)
 		{
-			sendMessage = keyRead.readLine();  // keyboard reading
+			/*sendMessage = keyRead.readLine();  // keyboard reading
 			System.out.println("Server :  "+sendMessage);
 
 			enSendMsg = auth.encryption(sendMessage);
 			
 			pwrite.print(enSendMsg);       // sending encrypted msg to server
 			pwrite.flush();                    // flush the data
-			System.out.println("Reading data...");
+			*/System.out.println("Reading data...");
 				byte[] reMsg = getBytesFromSocket();
-				System.out.println("Client : "+auth.decryption(reMsg) ); // displaying decrypted msg at  DOS prompt			
+				String receivedMsg = auth.decryption(reMsg);
+				System.out.println(name +" : "+ receivedMsg); // displaying decrypted msg at  DOS prompt
+				System.out.println("Forwarding to:" + otherName );
+				ClientHandler ch = ChatServer.clients.get(otherName);
+				ch.writeToClient(receivedMsg);
 		}   
 	}
+	
 	public void  sendCiphertoClient(String[] cipherStr) throws Exception{
-		System.out.println("sending cipher to client....");
+		//System.out.println("sending cipher to client....");
 		System.out.println(":ka "+cipherStr[0] +" , "+cipherStr[1]);
 		
 		out = new ByteArrayOutputStream();
@@ -107,14 +128,14 @@ public class ChathubServerControllerImpl implements ChathubServerController{
 
 	
 	public void sendCertificateToClient(HashSet cert) throws Exception{
-		System.out.println("sending certificate to client..");	
+		//System.out.println("sending certificate to client..");	
 		Enumeration e = Collections.enumeration(cert);
 		//while(e.hasMoreElements()){
 			 byte[] encodedCert = Base64.getEncoder().encode(e.toString().getBytes());
 			 out = new ByteArrayOutputStream();
 			 out.write(encodedCert, 0, encodedCert.length);
 			 out.writeTo(sock.getOutputStream());
-			 System.out.println(":k1 "+encodedCert);
+			 System.out.println(":k1 "+new String(encodedCert));
 		//}
 	
 	}
@@ -131,12 +152,12 @@ public class ChathubServerControllerImpl implements ChathubServerController{
 		ByteArrayOutputStream encOut = new ByteArrayOutputStream();
 		encOut.write(encodedCert);
 			 encOut.writeTo(sock.getOutputStream());
-			 System.out.println(":k1 "+encodedCert);	
+			 System.out.println(":k1 "+new String(encodedCert));	
 	}
 
 	public void sendPublicKeyToClient(byte[] pub) throws Exception{
 		
-		System.out.println("sending public key to client..");	
+		//System.out.println("sending public key to client..");	
 		 byte[] encodedPub = Base64.getEncoder().encode(pub);
 		 out = new ByteArrayOutputStream();
 		    //in = new ObjectInputStream(sock.getInputStream());
@@ -146,7 +167,7 @@ public class ChathubServerControllerImpl implements ChathubServerController{
 
 	}
 	public byte[] recievePublicKeyfromClient() throws Exception{
-		System.out.println("in recievePublicKeyfromclient().......");
+		//System.out.println("in recievePublicKeyfromclient().......");
 
 		 InputStream istream = sock.getInputStream();
 		   byte[] recPub = new byte[100];
@@ -154,10 +175,10 @@ public class ChathubServerControllerImpl implements ChathubServerController{
 			 out = new ByteArrayOutputStream();
 
 		    while(( bytesRead = istream.read(recPub))!= -1) { 
-		    	System.out.println("+++++++");
+		  //  	System.out.println("+++++++");
 		    	out.write(recPub,0,bytesRead);
 		   }
-			System.out.println("recieved public key from client.."+recPub);
+			//System.out.println("recieved public key from client.."+recPub);
 		    return recPub;
 	}
 public boolean validateCertificate(Certificate selfcert,Certificate othercert) throws 
@@ -185,10 +206,10 @@ InvalidKeyException, CertificateException, NoSuchAlgorithmException, NoSuchProvi
 	}*/
 
 	public Certificate[] recieveCertificateChainFromClient() throws Exception{
-		System.out.println("in recieve certificate from client().......");
+		//System.out.println("in recieve certificate from client().......");
 		byte[] encCertBytes =  getBytesFromSocket();
 		byte[] certBytes = Base64.getDecoder().decode(encCertBytes);
-		System.out.println("Received:" + new String(certBytes));
+		//System.out.println("Received:" + new String(certBytes));
 		ByteArrayInputStream bis = new ByteArrayInputStream(certBytes);
 		Collection certs = CertificateFactory.getInstance("X.509").generateCertificates(bis);
 			System.out.println("recieved certificate from client..");
@@ -197,7 +218,7 @@ InvalidKeyException, CertificateException, NoSuchAlgorithmException, NoSuchProvi
 			for (Iterator iterator = certs.iterator(); iterator.hasNext(); i++) {
 				Certificate object = (Certificate) iterator.next();
 				readCerts[i] = object;
-				System.out.println("Cert "+ i + " " + object);
+			//	System.out.println("Cert "+ i + " " + object);
 			}
 		    return readCerts;
 	}
@@ -235,7 +256,7 @@ InvalidKeyException, CertificateException, NoSuchAlgorithmException, NoSuchProvi
 	public byte[]  getCertificateFromKeystore() throws 
 	FileNotFoundException,KeyStoreException,IOException,CertificateException,NoSuchAlgorithmException,CertificateEncodingException{
 		X509Certificate cert = certdetails.getX509Certificate();
-		System.out.println("cert------------------------------" +cert);
+		//System.out.println("cert------------------------------" +cert);
 		byte[] certinbytes =  cert.getEncoded();
 		return certinbytes;
 	}

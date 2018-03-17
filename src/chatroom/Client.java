@@ -7,18 +7,30 @@ import java.util.Base64;
 import java.util.HashSet;
 
 //import java.util.Base64.*;
-public class ClientAlice {
-	
+
+public class Client {
+ 	
 	public static void main(String[] args) throws Exception
 	{
-		ClientAliceControllerImpl clicon = new ClientAliceControllerImpl();
+		if (!(args[0].equals("alice") || args[0].equals("bob"))) {
+			System.out.println("Invalid User!");
+			return;
+		}
+		ClientControllerImpl clicon = new ClientControllerImpl();
+		clicon.setName(args[0]);
+		clicon.sendNameToServer(args[0]);
 		ECKeyExchange eckey  = new ECKeyExchange();
 	      System.out.println("client want to start conversation....");
 	      String[] cipherStr = clicon.recieveCipher();
-	      ///if(cipherStr[1].equals("ecdh-secp224r1+nocert+aes128/gcm")){
 	    	  System.out.println("cipher selected was "+cipherStr[1]);
-	     // }
-	    	 Certificate[] clientCerts = CertificateUtil.getCertificateChain("F:/masters docs/8 Quarter/network security/project/mychatroom/alice/aliceKeystore.jks", "Alicepwd", "mykey-alice");
+	    	  Certificate[] clientCerts;
+	    	  if (args[0].equals("alice")) {
+	    		  //clientName = "alice";
+	    		  clientCerts = CertificateUtil.getCertificateChain("F:/masters docs/8 Quarter/network security/project/mychatroom/alice/aliceKeystore.jks", "Alicepwd", "mykey-alice");
+			} else {
+				clientCerts = CertificateUtil.getCertificateChain("F:/masters docs/8 Quarter/network security/project/mychatroom/bob/bobKeystore.jks", "Bobpwd", "mykey-bob");
+			}
+	    	 
 	    	 clicon.sendCertificateChainToServer(clientCerts);
 	    	 Certificate[] serverCerts = clicon.recieveCertificateChainFromServer();
 	    	  

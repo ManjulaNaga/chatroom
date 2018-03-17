@@ -29,7 +29,7 @@ import org.bouncycastle.util.encoders.Base64;
 			kpg.initialize(ecsp);*/
 			kpg.initialize(256);
 			KeyPair kp = kpg.generateKeyPair();	
-			System.out.println("+++++key pair is generated+++++");
+			System.out.println("+++++++key pair is generated+++++");
 			return kp;
 			
 	  }
@@ -46,7 +46,7 @@ import org.bouncycastle.util.encoders.Base64;
 			return kp;		
 	  }
 	 public PublicKey genPubKey(byte[] keyb)  throws Exception{
-		 System.out.println("in generate public key...");
+		// System.out.println("in generate public key...");
 		 	byte[] keyBytes = Base64.getDecoder().decode(keyb); 
 
 		    X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes); 
@@ -91,7 +91,7 @@ import org.bouncycastle.util.encoders.Base64;
 		    ka.doPhase(pubKey,true);
 		    byte[] sb = ka.generateSecret();
 		    skey = new SecretKeySpec(sb, 0, 16,"AES");
-		    System.out.println("Shared Key generated is==================== : "+new String(skey.getEncoded()));
+		    //System.out.println("Shared Key generated is==================== : "+new String(skey.getEncoded()));
 		    setSecretKey(skey);
 		    return skey;
 		}

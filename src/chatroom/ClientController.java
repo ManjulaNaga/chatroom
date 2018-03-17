@@ -14,11 +14,12 @@ import java.security.cert.CertificateException;
 import java.util.HashSet;
 
 public interface ClientController {
-
+	public void setName(String name);
 	public void clientChat() throws Exception;
 	public byte[] getBytesFromSocket() throws Exception;
 	public String[] recieveCipher() throws Exception ;
 	public void sendPublicKeyToServer(byte[] pub) throws Exception;
+	public void sendNameToServer(String name) throws Exception;
 	public byte[] recievePublicKeyfromServer() throws Exception;
 	public byte[] charToBytesASCII(char[] buffer, int length);
 	public void sendCertificateToServer(HashSet cert) throws Exception;

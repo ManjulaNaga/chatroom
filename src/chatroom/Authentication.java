@@ -40,14 +40,14 @@ public class Authentication {
 		r.nextBytes(iv);
 		// cipher.init(Cipher.ENCRYPT_MODE, skey, new IvParameterSpec(iv));
 		cipher.init(Cipher.ENCRYPT_MODE, skey, spec);		
-		System.out.println("Encrypt the data...");
+		//System.out.println("Encrypt the data...");
 		byte[] plainText  = originalText.getBytes();
 		long startTime = System.currentTimeMillis();
 		long endTime = 0;    
 		byte[] cipherText = cipher.doFinal(plainText);
 		byte[] encodedCipherText = Base64.getEncoder().encode(cipherText);
 		String encStr = new String(encodedCipherText);
-		System.out.println("Encrypted sucessfully:" + encStr);
+		//System.out.println("Encrypted sucessfully");
 		return encStr;
     }
 	String decryption(byte[] encodedCipherText)throws Exception{
@@ -64,9 +64,8 @@ public class Authentication {
 		GCMParameterSpec spec = new GCMParameterSpec(Constants.GOM_TAG_LENGTH*8, nonceBytes);
 		cipherD.init(Cipher.DECRYPT_MODE, skey, spec);
 		byte[] stringBytes = cipherD.doFinal(cipherText);
-		System.out.println("Decrypted: "+new String(stringBytes));
 		String str = new String(stringBytes);
-		System.out.println("Decrypted: "+str);
+		//System.out.println("Decrypted: "+str);
 		return str;
 	}
 

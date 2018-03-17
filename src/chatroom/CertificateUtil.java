@@ -53,7 +53,7 @@ public class CertificateUtil {
 	public static Certificate[] getCertificateChain(String jksPath, String jksPassword, String alias)  throws
 	KeyStoreException, FileNotFoundException, IOException, NoSuchAlgorithmException, CertificateException{
 		// Certificate[] chain = keyStore.getCertificateChain(alias);
-		System.out.println("in getCertificateChain()");
+		//System.out.println("in getCertificateChain()");
         KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());        
         char[] password = jksPassword.toCharArray();
         java.io.FileInputStream fis = null;
@@ -67,8 +67,8 @@ public class CertificateUtil {
         }
         Certificate[] certCahin = keyStore.getCertificateChain(alias);
         for (int i = 0; i < certCahin.length; i++) {
-        	System.out.println("Certificates ..****************************************************** : "+ certCahin[i]);
-        	System.out.println("Certificate type : "+ certCahin[i].getType());
+        	//System.out.println("Certificates ..****************************************************** : "+ certCahin[i]);
+        	//System.out.println("Certificate type : "+ certCahin[i].getType());
 		}
         return certCahin;
 	}
